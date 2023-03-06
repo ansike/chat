@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-import Container from './components/Container'
+import SelfRouter from './router'
 
 function App () {
   fetch('/')
@@ -12,7 +12,7 @@ function App () {
     })
   return (
     <div className='App'>
-      <Container />
+      <SelfRouter />
     </div>
   )
 }
