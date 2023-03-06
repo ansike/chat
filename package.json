@@ -1,0 +1,11 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "private": "true",
+  "repository": "git@github.com:ansike/chat.git",
+  "author": "ansike <984315765@qq.com>",
+  "license": "MIT"
+}
