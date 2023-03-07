@@ -11,7 +11,7 @@ const routes = [
     element: <Container />,
     children: [
       {
-        path: "/chat",
+        path: "/chat/:id",
         element: <Chat />,
       },
       {
@@ -21,7 +21,7 @@ const routes = [
       {
         // 默认路由
         path: "",
-        element: <Navigate to="/chat" replace />,
+        element: <Navigate to="/chat/0" replace />,
       },
     ],
   },

@@ -5,7 +5,7 @@ import s from "./index.module.less";
 const menus = [
   {
     name: "chat",
-    path: "/chat",
+    path: "/chat/0",
   },
   {
     name: "forum",
@@ -16,7 +16,11 @@ const Menu = () => {
   return (
     <div className={s.menu}>
       {menus.map((menu) => {
-        return <Link to={menu.path}>{menu.name}</Link>;
+        return (
+          <Link key={menu.path} to={menu.path}>
+            {menu.name}
+          </Link>
+        );
       })}
     </div>
   );

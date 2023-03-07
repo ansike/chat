@@ -7,9 +7,7 @@ const Body = () => {
   return (
     <div className={s.body}>
       <Menu />
-      <div>
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 };
