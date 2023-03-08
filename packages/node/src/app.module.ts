@@ -1,10 +1,27 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { RouterModule } from '@nestjs/core';
+import { GroupModule } from './core/group/module';
+import { UserModule } from './core/user/module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    GroupModule,
+    UserModule,
+    RouterModule.register([
+      {
+        path: 'api',
+        children: [
+          {
+            path: '/group',
+            module: GroupModule,
+          },
+          {
+            path: '/user',
+            module: UserModule,
+          },
+        ],
+      },
+    ]),
+  ],
 })
 export class AppModule {}

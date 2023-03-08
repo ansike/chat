@@ -1,37 +1,16 @@
-/*
- * @Description: description
- * @Author: Ask
- * @LastEditors: Ask
- * @Date: 2023-03-07 22:33:03
- * @LastEditTime: 2023-03-07 22:33:16
- */
-import qs from "qs";
+const ws = new WebSocket("ws://localhost:");
+//监听WebSocket事件 open和WebSocket服务器连接成功触发
+ws.addEventListener("open", () => {
+  console.log("连接成功");
+});
 
-export const request = function request(
-  url: string,
-  config: Record<string, any> = {}
-) {
-  config == null || typeof config !== "object" ? (config = {}) : null; //确保config肯定是对象
+//接受websocket服务的消息
+ws.addEventListener("message", (msg) => {
+  console.log(msg.data);
+});
 
-  if (typeof url !== "string")
-    throw new TypeError(` ${url} is not an string! `);
+ws.addEventListener("close", () => {
+  console.log("服务断开");
+});
 
-  const { method = "GET", data } = config;
-
-  // 区分get请求和post请求传递参数
-  delete config.data;
-  if (method.toUpperCase() === "POST") {
-    config.body = qs.stringify(data);
-  } else {
-    url = `url?${new URLSearchParams(data).toString()}`;
-  }
-
-  return new Promise((resolve, reject) => {
-    fetch(url, config)
-      .then(async (res) => {
-        const response = await res.json();
-        resolve(response);
-      })
-      .catch(reject);
-  });
-};
+export { ws };

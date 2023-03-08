@@ -3,16 +3,14 @@
  * @Author: Ask
  * @LastEditors: Ask
  * @Date: 2023-03-06 22:14:09
- * @LastEditTime: 2023-03-06 22:42:50
+ * @LastEditTime: 2023-03-08 22:38:55
  */
 import qs from "qs";
 
-export const request = function request(
+export const request = function request<T>(
   url: string,
   config: Record<string, any> = {}
 ) {
-  config == null || typeof config !== "object" ? (config = {}) : null; //确保config肯定是对象
-
   if (typeof url !== "string")
     throw new TypeError(` ${url} is not an string! `);
 
@@ -23,10 +21,10 @@ export const request = function request(
   if (method.toUpperCase() === "POST") {
     config.body = qs.stringify(data);
   } else {
-    url = `url?${new URLSearchParams(data).toString()}`;
+    url = `${url}?${new URLSearchParams(data).toString()}`;
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<T>((resolve, reject) => {
     fetch(url, config)
       .then(async (res) => {
         const response = await res.json();
