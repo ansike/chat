@@ -1,6 +1,4 @@
-import React from "react";
-
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
 import { GroupType } from "../type";
 import Header from "./Header";
 import Body from "./Body";
@@ -11,9 +9,10 @@ import s from "./index.module.less";
 type ContentProps = {
   group?: GroupType;
 };
+
 const Content = (props: ContentProps) => {
   const { group } = props;
-  const { id } = useParams();
+
 
   if (!group) {
     return <div className={s.welcome}>have a nice day~</div>;

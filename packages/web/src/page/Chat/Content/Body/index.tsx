@@ -1,23 +1,35 @@
-/*
- * @Description: description
- * @Author: Ask
- * @LastEditors: Ask
- * @Date: 2023-03-07 21:44:01
- * @LastEditTime: 2023-03-07 23:59:27
- */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { msgs } from "../../data";
 import s from "./index.module.less";
 import { MsgType } from "../../type";
+import { SOCKET_KEY, socket } from "@/utils/webSocket";
 const Body = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("uid");
 
   const [messags, setMessags] = useState<MsgType[]>([]);
   useEffect(() => {
-    setMessags(msgs);
+    socket.on(SOCKET_KEY.ALL_MSG, function (data) {
+      setMessags(data);
+      console.log("content", SOCKET_KEY.ALL_MSG, data);
+    });
+    socket.emit(SOCKET_KEY.ALL_MSG, "");
   }, []);
+
+    useEffect(() => {
+      socket.on(SOCKET_KEY.MSG_KEY, function (data) {
+        setMessags([
+          ...messags,
+          {
+            content: data.msg,
+            createDate: "",
+            groupId: "1",
+            id: Math.random() + "",
+            uid: "1",
+          } as MsgType,
+        ]);
+      });
+    }, [messags, setMessags]);
 
   return (
     <div className={s.body}>
