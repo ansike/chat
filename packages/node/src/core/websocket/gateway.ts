@@ -6,20 +6,36 @@ import {
   WsResponse,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { MsgType } from './type';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Message, MessageDocument } from '../group/schemas/message';
+import { Model } from 'mongoose';
 
+@Injectable()
 @WebSocketGateway(5001, {
   cors: {
     origin: '*',
   },
 })
 export class Gateway {
+  constructor(
+    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+  ) {}
   @WebSocketServer()
   server: Server;
+  connectors: string[] = [];
 
   @SubscribeMessage('msg')
-  findAll(@MessageBody() data: any): WsResponse<any> {
-    const { uid, msg } = JSON.parse(data);
+  async msg(@MessageBody() data: any): Promise<WsResponse<any>> {
+    console.log(data);
+    const { uid, gid, msg } = data;
+    await this.messageModel.create({
+      msg,
+      creator: uid,
+      group: gid,
+    });
+
+    // 通知其他连接者
     return {
       event: 'msg',
       data: {
@@ -30,31 +46,21 @@ export class Gateway {
   }
 
   @SubscribeMessage('allMsg')
-  async allMsg(): Promise<WsResponse<MsgType[]>> {
+  async allMsg(@MessageBody() gid: string): Promise<WsResponse<Message[]>> {
+    const msgs = await this.messageModel
+      .find({
+        group: gid,
+      })
+      .exec();
     return {
       event: 'allMsg',
-      data: [
-        {
-          id: '1',
-          groupId: '1',
-          uid: '1',
-          content:
-            'hi,hi,hihi,hi,hi,hihihi,hi,hihihi,hi,hihihi,hi,hihihi,hi,hihihi,hi,hihihi,hi,hihi',
-          createDate: '',
-        },
-        {
-          id: '2',
-          groupId: '1',
-          uid: '2',
-          content: 'hello',
-          createDate: '',
-        },
-      ],
+      data: msgs,
     };
   }
 
   @SubscribeMessage('identity')
-  async identity(@MessageBody() data: number): Promise<number> {
-    return data;
+  async identity(@MessageBody() uid: string): Promise<string[]> {
+    this.connectors = Array.from(new Set([...this.connectors, uid]));
+    return this.connectors;
   }
 }

@@ -1,53 +1,63 @@
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import s from "./index.module.less";
-import { MsgType } from "../../type";
+import { useContext, useEffect, useState } from "react";
 import { SOCKET_KEY, socket } from "@/utils/webSocket";
+import { MsgType } from "../../type";
+import { ChatContext } from "../../context";
+
+import s from "./index.module.less";
+
 const Body = () => {
-  const [searchParams] = useSearchParams();
-  const userId = searchParams.get("uid");
-
+  const { user: curUser, group } = useContext(ChatContext);
   const [messags, setMessags] = useState<MsgType[]>([]);
-  useEffect(() => {
-    socket.on(SOCKET_KEY.ALL_MSG, function (data) {
-      setMessags(data);
-      console.log("content", SOCKET_KEY.ALL_MSG, data);
-    });
-    socket.emit(SOCKET_KEY.ALL_MSG, "");
-  }, []);
 
-    useEffect(() => {
-      socket.on(SOCKET_KEY.MSG_KEY, function (data) {
-        setMessags([
-          ...messags,
-          {
-            content: data.msg,
-            createDate: "",
-            groupId: "1",
-            id: Math.random() + "",
-            uid: "1",
-          } as MsgType,
-        ]);
-      });
-    }, [messags, setMessags]);
+  const allMsg = (data: MsgType[]) => {
+    setMessags(data);
+    console.log("content", SOCKET_KEY.ALL_MSG, data);
+  };
+
+  useEffect(() => {
+    socket.on(SOCKET_KEY.ALL_MSG, allMsg);
+
+    if (group?._id) {
+      socket.emit(SOCKET_KEY.ALL_MSG, group?._id);
+    }
+
+    return () => {
+      socket.off(SOCKET_KEY.ALL_MSG, allMsg);
+    };
+  }, [group?._id]);
+
+  useEffect(() => {
+    // socket.on(SOCKET_KEY.MSG_KEY, function (data) {
+    //   setMessags([
+    //     ...messags,
+    //     {
+    //       content: data.msg,
+    //       group: group!,
+    //       user: user!,
+    //     },
+    //   ]);
+    // });
+  }, [messags, setMessags]);
 
   return (
     <div className={s.body}>
-      {messags.map((msg) => {
-        const { content, id, uid } = msg;
+      {messags.map((data) => {
+        const { msg, _id, user } = data;
         return (
           <div
-            key={id}
-            className={`${s.msg} ${userId === uid ? s.curUser : ""}`}
+            key={_id}
+            className={`${s.msg} ${
+              user?._id === curUser?._id ? s.curUser : ""
+            }`}
           >
-            <div className={s.avatar}>{uid}</div>
+            <div className={s.avatar}>{user?.name}</div>
             <div className={s.detail}>
               <div className={s.top}>
-                <div className={s.name}>ask</div>
-                <div className={s.date}>12:12</div>
+                <div className={s.name}>{user?.name}</div>
+                <div className={s.date}>{user?.update_at}</div>
               </div>
               <div className={s.bottom}>
-                <div className={s.msg}>{content}</div>
+                <div className={s.msg}>{msg}</div>
               </div>
             </div>
           </div>

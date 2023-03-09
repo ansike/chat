@@ -7,7 +7,7 @@ export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
   @Get('/list')
-  getHello(): GroupType[] {
+  list(): GroupType[] {
     return this.groupService.groupList();
   }
 }

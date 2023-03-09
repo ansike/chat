@@ -3,22 +3,31 @@
  * @Author: Ask
  * @LastEditors: Ask
  * @Date: 2023-03-07 22:40:45
- * @LastEditTime: 2023-03-07 23:46:27
+ * @LastEditTime: 2023-03-09 23:57:28
  */
-
 export type GroupType = {
-  id: string;
+  _id: string;
   name: string;
-  teams: string[];
-  latestMsg: string;
-  latestMsgDate: Date;
-  createTime: Date;
+  member: UserType[];
+  avatar: "";
+  created_at: string;
+  update_at: string;
 };
 
 export type MsgType = {
-  id: string;
-  uid: string;
-  groupId: string;
-  content: string;
-  createDate: string;
+  _id: string;
+  msg: string;
+  user: UserType;
+  group: GroupType;
+  created_at?: string;
+  update_at?: string;
+};
+
+export type UserType = {
+  _id: string;
+  name: string;
+  age: number;
+  avatar: "";
+  created_at: string;
+  update_at: string;
 };

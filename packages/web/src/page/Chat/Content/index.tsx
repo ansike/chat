@@ -1,18 +1,14 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { GroupType } from "../type";
 import Header from "./Header";
 import Body from "./Body";
 import Footer from "./Footer";
 
 import s from "./index.module.less";
+import { ChatContext } from "../context";
 
-type ContentProps = {
-  group?: GroupType;
-};
-
-const Content = (props: ContentProps) => {
-  const { group } = props;
-
+const Content = () => {
+  const { group } = useContext(ChatContext);
 
   if (!group) {
     return <div className={s.welcome}>have a nice day~</div>;
@@ -20,7 +16,7 @@ const Content = (props: ContentProps) => {
 
   return (
     <div className={s.content}>
-      <Header group={group}></Header>
+      <Header></Header>
       <Body></Body>
       <Footer></Footer>
     </div>

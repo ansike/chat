@@ -1,18 +1,15 @@
-import React from "react";
-import { GroupType } from "../../type";
+import { useContext } from "react";
 
+import { ChatContext } from "../../context";
 import s from "./index.module.less";
 
-type HeaderProps = {
-  group: GroupType;
-};
-const Header = (props: HeaderProps) => {
-  const { group } = props;
+const Header = () => {
+  const { group } = useContext(ChatContext);
 
   return (
     <div className={s.header}>
-      <div className={s.name}>{group.name}</div>
-      <div className={s.num}>4人</div>
+      <div className={s.name}>{group?.name}</div>
+      <div className={s.num}>{group?.member?.length}人</div>
     </div>
   );
 };

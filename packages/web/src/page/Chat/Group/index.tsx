@@ -23,12 +23,12 @@ const Group = (props: GroupProps) => {
     <div className={s.group}>
       <div className={s.search}></div>
       {groups.map((group) => {
-        const { id, name } = group;
+        const { _id, name } = group;
         return (
           <div
-            className={`${s.groupItem} ${groupId === id ? s.activeGroup : ""}`}
-            key={id}
-            onClick={() => openChat(id)}
+            className={`${s.groupItem} ${groupId === _id ? s.activeGroup : ""}`}
+            key={_id}
+            onClick={() => openChat(_id)}
           >
             {name}
           </div>

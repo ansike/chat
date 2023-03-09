@@ -1,23 +1,23 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SOCKET_KEY, socket } from "@/utils/webSocket";
 
 import s from "./index.module.less";
+import { ChatContext } from "../../context";
 
 const Footer = () => {
-    const [searchParams] = useSearchParams();
-  const userId = searchParams.get("uid");
-  const [val, setVal] = useState("");
+  const { group, user } = useContext(ChatContext);
 
+  const [val, setVal] = useState("");
+  console.log({ user });
+  
   const submit = () => {
     // 发送消息
-    socket.emit(
-      SOCKET_KEY.MSG_KEY,
-      JSON.stringify({
-        uid: userId,
-        msg: val,
-      })
-    );
+    socket.emit(SOCKET_KEY.MSG_KEY, {
+      uid: user?._id,
+      gid: group?._id,
+      msg: val,
+    });
     // 清空输入框
     setVal("");
   };

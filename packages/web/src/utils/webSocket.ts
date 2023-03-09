@@ -24,8 +24,8 @@ class SelfSocket {
     socket.on("connect", function () {
       console.log("Connected");
 
-      // socket.emit("events", { test: "test" });
-      socket.emit("identity", 0, (response: any) =>
+      const uid = new URLSearchParams(window.location.search).get("uid");
+      socket.emit("identity", uid, (response: string[]) =>
         console.log("Identity:", response)
       );
     });
