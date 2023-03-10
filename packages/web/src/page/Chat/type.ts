@@ -3,7 +3,7 @@
  * @Author: Ask
  * @LastEditors: Ask
  * @Date: 2023-03-07 22:40:45
- * @LastEditTime: 2023-03-09 23:57:28
+ * @LastEditTime: 2023-03-11 00:14:00
  */
 export type GroupType = {
   _id: string;
@@ -17,7 +17,7 @@ export type GroupType = {
 export type MsgType = {
   _id: string;
   msg: string;
-  user: UserType;
+  creator: UserType;
   group: GroupType;
   created_at?: string;
   update_at?: string;

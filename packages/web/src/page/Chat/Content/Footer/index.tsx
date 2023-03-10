@@ -1,15 +1,16 @@
 import { useContext, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { SOCKET_KEY, socket } from "@/utils/webSocket";
 
-import s from "./index.module.less";
+import { GlobalContext } from "@/context";
 import { ChatContext } from "../../context";
 
+import s from "./index.module.less";
+
 const Footer = () => {
-  const { group, user } = useContext(ChatContext);
+  const { group,  } = useContext(ChatContext);
+  const { user } = useContext(GlobalContext);
 
   const [val, setVal] = useState("");
-  console.log({ user });
   
   const submit = () => {
     // 发送消息

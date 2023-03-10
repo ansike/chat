@@ -10,6 +10,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Message, MessageDocument } from '../group/schemas/message';
 import { Model } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 @WebSocketGateway(5001, {
@@ -26,31 +27,43 @@ export class Gateway {
   connectors: string[] = [];
 
   @SubscribeMessage('msg')
-  async msg(@MessageBody() data: any): Promise<WsResponse<any>> {
+  async msg(@MessageBody() data: any): Promise<void> {
     console.log(data);
     const { uid, gid, msg } = data;
-    await this.messageModel.create({
+    const sData = {
       msg,
-      creator: uid,
+      creator: new ObjectId(uid),
       group: gid,
-    });
-
-    // 通知其他连接者
-    return {
-      event: 'msg',
-      data: {
-        uid: uid + 1,
-        msg: '我是3号' + msg,
-      },
     };
+    await this.messageModel.create(sData);
+    this.server.to(this.connectors).emit('msg', sData);
   }
 
   @SubscribeMessage('allMsg')
   async allMsg(@MessageBody() gid: string): Promise<WsResponse<Message[]>> {
     const msgs = await this.messageModel
-      .find({
-        group: gid,
-      })
+      .aggregate([
+        { $match: { group: gid } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'creator',
+            foreignField: '_id',
+            as: 'creatorDetails',
+          },
+        },
+        { $unwind: '$creatorDetails' },
+        {
+          $project: {
+            _id: 1,
+            msg: 1,
+            creator: '$creatorDetails',
+            group: 1,
+            created_at: 1,
+            update_at: 1,
+          },
+        },
+      ])
       .exec();
     return {
       event: 'allMsg',
