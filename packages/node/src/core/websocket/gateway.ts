@@ -1,5 +1,6 @@
 import {
   MessageBody,
+  OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -11,6 +12,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Message, MessageDocument } from '../group/schemas/message';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { User, UserDocument } from '../user/schema';
 
 @Injectable()
 @WebSocketGateway(5001, {
@@ -21,6 +23,7 @@ import { ObjectId } from 'mongodb';
 export class Gateway {
   constructor(
     @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
   @WebSocketServer()
   server: Server;
@@ -28,15 +31,28 @@ export class Gateway {
 
   @SubscribeMessage('msg')
   async msg(@MessageBody() data: any): Promise<void> {
-    console.log(data);
     const { uid, gid, msg } = data;
-    const sData = {
+    const user = await this.userModel
+      .findOne({ _id: new ObjectId(uid) })
+      .exec();
+
+    if (!user) {
+      console.log(`非法用户 uid:${uid}, msg: ${msg}`);
+      return;
+    }
+
+    const msgObj = await this.messageModel.create({
       msg,
       creator: new ObjectId(uid),
       group: gid,
-    };
-    await this.messageModel.create(sData);
-    this.server.to(this.connectors).emit('msg', sData);
+    });
+    const clients = Array.from(this.server.sockets.sockets.values());
+    clients.forEach((client) =>
+      client.emit('msg', {
+        ...msgObj.toObject(),
+        creator: user,
+      }),
+    );
   }
 
   @SubscribeMessage('allMsg')
@@ -73,7 +89,7 @@ export class Gateway {
 
   @SubscribeMessage('identity')
   async identity(@MessageBody() uid: string): Promise<string[]> {
-    this.connectors = Array.from(new Set([...this.connectors, uid]));
+    this.connectors.push();
     return this.connectors;
   }
 }

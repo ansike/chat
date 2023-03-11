@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { SOCKET_KEY, socket } from "@/utils/webSocket";
 import { MsgType } from "../../type";
 import { ChatContext } from "../../context";
@@ -10,7 +10,8 @@ const Body = () => {
   const { group } = useContext(ChatContext);
   const { user: curUser } = useContext(GlobalContext);
   const [messags, setMessags] = useState<MsgType[]>([]);
-
+  const bodyRef = useRef<HTMLDivElement>(null);
+  
   const allMsg = (data: MsgType[]) => {
     setMessags(data);
     console.log("content", SOCKET_KEY.ALL_MSG, data);
@@ -29,17 +30,24 @@ const Body = () => {
   }, [group?._id]);
 
   useEffect(() => {
-    // socket.on(SOCKET_KEY.MSG_KEY, function (data) {
-    //   setMessags([
-    //     ...messags,
-    //     {
-    //       content: data.msg,
-    //       group: group!,
-    //       user: user!,
-    //     },
-    //   ]);
-    // });
-  }, [messags, setMessags]);
+    if (bodyRef.current) {
+      bodyRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    socket.on(SOCKET_KEY.MSG_KEY, addMsg);
+    return () => {
+      socket.off(SOCKET_KEY.MSG_KEY, addMsg);
+    };
+  }, [messags]);
+
+  const addMsg = (data: MsgType) => {
+    setMessags([
+      ...messags,
+      {
+        ...data,
+        group: group!,
+      },
+    ]);
+  };
 
   return (
     <div className={s.body}>
@@ -65,6 +73,7 @@ const Body = () => {
           </div>
         );
       })}
+      <div ref={bodyRef}></div>
     </div>
   );
 };
