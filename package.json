@@ -4,6 +4,10 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "web-dev":"cd packages/web && yarn dev",
+    "node-dev":"cd packages/node && yarn dev"
+  },
   "private": "true",
   "repository": "git@github.com:ansike/chat.git",
   "author": "ansike <984315765@qq.com>",

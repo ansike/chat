@@ -1,6 +1,5 @@
 import {
   MessageBody,
-  OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -46,6 +45,7 @@ export class Gateway {
       creator: new ObjectId(uid),
       group: gid,
     });
+    // TODO 分组广播
     const clients = Array.from(this.server.sockets.sockets.values());
     clients.forEach((client) =>
       client.emit('msg', {

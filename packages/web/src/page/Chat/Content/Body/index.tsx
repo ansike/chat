@@ -5,13 +5,14 @@ import { ChatContext } from "../../context";
 import { GlobalContext } from "@/context";
 
 import s from "./index.module.less";
+import { formatTime } from "@/utils/format";
 
 const Body = () => {
   const { group } = useContext(ChatContext);
   const { user: curUser } = useContext(GlobalContext);
   const [messags, setMessags] = useState<MsgType[]>([]);
   const bodyRef = useRef<HTMLDivElement>(null);
-  
+
   const allMsg = (data: MsgType[]) => {
     setMessags(data);
     console.log("content", SOCKET_KEY.ALL_MSG, data);
@@ -64,7 +65,9 @@ const Body = () => {
             <div className={s.detail}>
               <div className={s.top}>
                 <div className={s.name}>{creator?.name}</div>
-                <div className={s.date}>{creator?.update_at}</div>
+                <div className={s.date}>
+                  {formatTime(creator?.create_at || "")}
+                </div>
               </div>
               <div className={s.bottom}>
                 <div className={s.msg}>{msg}</div>

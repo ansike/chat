@@ -1,33 +1,50 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { request } from "@/utils/fetch";
+import { useQuery } from "@apollo/client";
+import { GET_ALL_GROUPS } from "@/gql/group";
 
 import Content from "./Content";
 import Group from "./Group";
-import { GroupType } from "./type";
+import { GroupResType, GroupType, UserType } from "./type";
 import { ChatContext } from "./context";
 
 import s from "./index.module.less";
+import { Spin } from "antd";
+import { GlobalContext } from "@/context";
 
 const Chat = () => {
   const { id } = useParams();
-  const [groups, setGroups] = useState<GroupType[]>([]);
   const [curGroup, setCurGroup] = useState<GroupType | null>(null);
-
+  const { userList } = useContext(GlobalContext);
+  const { loading, data } = useQuery<{ groups: GroupResType[] }>(
+    GET_ALL_GROUPS
+  );
+  const userMap: { [key: string]: UserType } | undefined = userList?.reduce(
+    (prev, cur) => {
+      prev = { ...prev, [cur._id]: cur };
+      return prev;
+    },
+    {}
+  );
   useEffect(() => {
-    getGroup();
-  }, []);
-
-  const getGroup = async () => {
-    const res = await request<GroupType[]>("/api/group/list");
-    setGroups(res);
-    const g = res.find((g) => g._id === id);
-    g && setCurGroup(g);
-  };
+    if (data?.groups.length) {
+      setGroup();
+    }
+  }, [id, data?.groups]);
 
   if (!id) {
     return <>缺失分组信息</>;
   }
+
+  const setGroup = () => {
+    const cg = data?.groups.find((g) => g._id === id);
+    if (cg) {
+      setCurGroup({
+        ...cg,
+        members: cg?.members.map((m) => userMap![m])||[],
+      });
+    }
+  };
 
   return (
     <ChatContext.Provider
@@ -35,16 +52,19 @@ const Chat = () => {
         group: curGroup,
       }}
     >
+      {/* <Spin spinning={loading}> */}
       <div className={s.chat}>
         <Group
-          groups={groups}
-          groupChange={(id) => {
-            const cg = groups.find((g) => g._id === id);
-            cg && setCurGroup(cg);
-          }}
+          groups={
+            data?.groups?.map((g) => ({
+              ...g,
+              members: g.members?.map((m) => userMap?.[m as string]),
+            })) as GroupType[]
+          }
         ></Group>
         <Content></Content>
       </div>
+      {/* </Spin> */}
     </ChatContext.Provider>
   );
 };

@@ -1,21 +1,18 @@
-import React from "react";
 import { GroupType } from "../type";
 import { useNavigate, useParams } from "react-router-dom";
 
 import s from "./index.module.less";
 
 type GroupProps = {
-  groups: GroupType[];
-  groupChange: (id: string) => void;
+  groups?: GroupType[];
 };
 const Group = (props: GroupProps) => {
   const { id: groupId } = useParams();
 
-  const { groups = [], groupChange } = props;
+  const { groups = [] } = props;
   const navigate = useNavigate();
 
   const openChat = (id: string) => {
-    groupChange(id);
     navigate(`/chat/${id}`);
   };
 

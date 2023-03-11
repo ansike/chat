@@ -9,6 +9,7 @@ const routes = [
   {
     path: "/",
     element: <Container />,
+    error: <div>404</div>,
     children: [
       {
         path: "/chat/:id",
@@ -21,6 +22,7 @@ const routes = [
       {
         // 默认路由
         path: "",
+        // element: <Navigate to="/forum" replace />,
         element: <Navigate to="/chat/0" replace />,
       },
     ],

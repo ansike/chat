@@ -1,0 +1,42 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Group {
+  _id: ID!
+  name: String!
+  members: [ID!]!
+  latestMsgId: ID!
+  avatar: String!
+  create_at: DateTime!
+  update_at: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type User {
+  _id: String!
+  name: String!
+  age: Int!
+  avatar: String!
+  create_at: DateTime!
+  update_at: DateTime!
+}
+
+type Query {
+  groups: [Group!]!
+  users: [User!]!
+}
+
+type Mutation {
+  createUser(createUserInput: CreateUserInput!): User!
+}
+
+input CreateUserInput {
+  name: String!
+  avatar: Int
+  age: Int!
+}

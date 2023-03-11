@@ -1,29 +1,33 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+import { useQuery } from "@apollo/client";
 import { GlobalContext } from "./context";
 import SelfRouter from "./router";
-import { request } from "./utils/fetch";
 import { UserType } from "./page/Chat/type";
+import { GET_ALL_USERS } from "./gql/user";
+
+import "antd/dist/reset.css";
+import "./App.css";
+import { Spin } from "antd";
 
 function App() {
-  const [curUser, setCurUser] = useState<UserType | null>(null);
-
   const uid = new URLSearchParams(window.location.search).get("uid");
+  const { loading, error, data } = useQuery<{ users: UserType[] }>(
+    GET_ALL_USERS
+  );
+  const user = data?.users.find((user) => user._id === uid);
 
-  useEffect(() => {
-    getUser();
-  }, []);
-
-  const getUser = async () => {
-    const res = await request<UserType[]>("/api/user/list");
-    const u = res.find((u) => u._id === uid);
-    u && setCurUser(u);
-  };
+  if (error) {
+    return <div>GET user error</div>;
+  }
 
   return (
-    <GlobalContext.Provider value={{ user: curUser }}>
+    <GlobalContext.Provider
+      value={{
+        user: user || null,
+        userList: data?.users || null,
+      }}
+    >
       <div className="App">
-        <SelfRouter />
+        {loading ? <Spin spinning={loading}></Spin> : <SelfRouter />}
       </div>
     </GlobalContext.Provider>
   );

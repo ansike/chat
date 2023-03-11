@@ -1,16 +1,18 @@
-/*
- * @Description: description
- * @Author: Ask
- * @LastEditors: Ask
- * @Date: 2023-03-07 22:40:45
- * @LastEditTime: 2023-03-11 08:15:15
- */
 export type GroupType = {
   _id: string;
   name: string;
-  member: UserType[];
+  members: UserType[];
   avatar: "";
-  created_at: string;
+  create_at: string;
+  update_at: string;
+};
+
+export type GroupResType = {
+  _id: string;
+  name: string;
+  members: string[];
+  avatar: "";
+  create_at: string;
   update_at: string;
 };
 
@@ -19,7 +21,7 @@ export type MsgType = {
   msg: string;
   creator: UserType;
   group: GroupType;
-  created_at?: string;
+  create_at?: string;
   update_at?: string;
 };
 
@@ -28,6 +30,6 @@ export type UserType = {
   name: string;
   age: number;
   avatar: "";
-  created_at: string;
+  create_at: string;
   update_at: string;
 };

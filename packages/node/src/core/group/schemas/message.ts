@@ -15,7 +15,7 @@ export class Message {
   group: Types.ObjectId;
 
   @Prop({ type: Date, default: Date.now })
-  created_at: Date;
+  create_at: Date;
 
   @Prop({ type: Date, default: Date.now })
   update_at: Date;

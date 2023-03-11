@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <div className={s.header}>
       <div className={s.name}>{group?.name}</div>
-      <div className={s.num}>{group?.member?.length}人</div>
+      <div className={s.num}>{group?.members?.length}人</div>
     </div>
   );
 };
